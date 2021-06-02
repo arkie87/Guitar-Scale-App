@@ -188,8 +188,6 @@ class Scale:
             else:
                 symbol = ""
             note = Note(letter + symbol)
-            if note.value != value:
-                print(f"{note.note} is not {value}.")
             notes.append(note)
             values.append(value)
         self.notes = notes
