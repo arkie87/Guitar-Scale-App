@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
-from PyQt5.QtWidgets import QLabel, QComboBox, QVBoxLayout
+from PyQt5.QtWidgets import QLabel, QComboBox, QGridLayout
 
 
 class MainWindow(QWidget):
@@ -11,7 +11,7 @@ class MainWindow(QWidget):
         super().__init__()
         self.setWindowTitle("Arkie's Guitar App")
         self.setFixedWidth(1000)
-        self.setFixedHeight(700)
+        self.setFixedHeight(500)
         # Data
         self.scale = Scale()
         self.guitar = Guitar()
@@ -30,11 +30,11 @@ class MainWindow(QWidget):
                         self.tuning_combo, self.mode_combo]
         self.fretboard = FretBoardTable(self)
         # Layout
-        self.layout = QVBoxLayout()
+        self.layout = QGridLayout()
         for k, (label, button) in enumerate(zip(self.labels, self.buttons)):
-            self.layout.addWidget(label, 2*k)
-            self.layout.addWidget(button, 2*k+1)
-        self.layout.addWidget(self.fretboard, 2*k+2)
+            self.layout.addWidget(label, 2*k, 0)
+            self.layout.addWidget(button, 2*k+1, 0)
+        self.layout.addWidget(self.fretboard, 2*k+2, 0)
         self.setLayout(self.layout)
         # Initialize
         self.update_all()
@@ -79,9 +79,7 @@ class FretBoardTable(QTableWidget):
         guitar = self.parent.guitar
         self.setRowCount(len(guitar.strings))
         self.setColumnCount(guitar.frets)
-        strings = []
-        for string in guitar.strings:
-            strings.append(string.note)                        
+        strings = [string.note for string in guitar.strings]
         self.setVerticalHeaderLabels(strings)
         labels = [str(i) for i in range(1, guitar.frets + 1)]
         self.setHorizontalHeaderLabels(labels)
