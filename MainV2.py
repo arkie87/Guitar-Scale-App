@@ -29,12 +29,14 @@ class MainWindow(QWidget):
         self.buttons = [self.root_combo, self.scale_combo, 
                         self.tuning_combo, self.mode_combo]
         self.fretboard = FretBoardTable(self)
+        self.label = MyLabel(self, "")
         # Layout
         self.layout = QGridLayout()
         for k, (label, button) in enumerate(zip(self.labels, self.buttons)):
             self.layout.addWidget(label, 2*k, 0)
             self.layout.addWidget(button, 2*k+1, 0)
         self.layout.addWidget(self.fretboard, 2*k+2, 0)
+        self.layout.addWidget(self.label, 2*k+3, 0)
         self.setLayout(self.layout)
         # Initialize
         self.update_all()
@@ -172,6 +174,8 @@ class Scale:
             letter_value = Note.letters[letter]
             value = notes[0] + interval
             diff = value - letter_value
+            if abs(diff) > 6:
+                diff -= 12 
             if diff > 0:
                 symbol = "#"
             elif diff < 0:
@@ -206,7 +210,7 @@ class Note:
                 value += len(self.note) - 1
             elif symbol == "b":
                 value -= len(self.note) - 1
-        return value
+        return (value % 12)
             
 
 if __name__ == "__main__":
