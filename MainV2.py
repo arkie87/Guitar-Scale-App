@@ -17,17 +17,19 @@ class MainWindow(QWidget):
         self.guitar = Guitar()
         # Widgets
         self.root_label = MyLabel(self, "Root Note: ")
+        self.modifier_label = MyLabel(self, "Natural/Flat/Sharp: ")
         self.scale_label = MyLabel(self, "Scale Type: ")
         self.tuning_label =  MyLabel(self, "Guitar Tuning: ")
         self.mode_label = MyLabel(self, "Note/Tab View: ")
-        self.labels = [self.root_label, self.scale_label,
-                       self.tuning_label, self.mode_label]
+        self.labels = [self.root_label, self.modifier_label,
+                       self.scale_label, self.tuning_label, self.mode_label]
         self.root_combo = MyComboBox(self, Note.letters)
+        self.modifier_combo = MyComboBox(self, Note.modifiers)
         self.scale_combo = MyComboBox(self, Scale.scales)
         self.tuning_combo = MyComboBox(self, Guitar.tunings)
         self.mode_combo = MyComboBox(self, {"Notes":[], "Tabs":[]})
-        self.buttons = [self.root_combo, self.scale_combo, 
-                        self.tuning_combo, self.mode_combo]
+        self.buttons = [self.root_combo, self.modifier_combo,
+                        self.scale_combo, self.tuning_combo, self.mode_combo]
         self.fretboard = FretBoardTable(self)
         self.label = MyLabel(self, "")
         # Layout
@@ -45,8 +47,9 @@ class MainWindow(QWidget):
         
     def update_all(self):
         root = self.root_combo.currentText()
+        modifier = Note.modifiers[self.modifier_combo.currentText()]
         scale_type = self.scale_combo.currentText()
-        self.scale.root = Note(root)
+        self.scale.root = Note(root + modifier)
         self.scale.scale_type = scale_type
         self.scale.update()
         tuning = self.tuning_combo.currentText()
@@ -174,15 +177,19 @@ class Scale:
             letter_value = Note.letters[letter]
             value = notes[0] + interval
             diff = value - letter_value
-            if abs(diff) > 6:
+            if diff > 6:
                 diff -= 12 
+            elif diff < - 6:
+                diff += 12
             if diff > 0:
-                symbol = "#"
+                symbol = "#" * diff
             elif diff < 0:
-                symbol = "b"
+                symbol = "b" * (-diff)
             else:
                 symbol = ""
             note = Note(letter + symbol)
+            if note.value != value:
+                print(f"{note.note} is not {value}.")
             notes.append(note)
             values.append(value)
         self.notes = notes
@@ -191,6 +198,7 @@ class Scale:
 
 class Note:
     letters = {"A": 0, "B": 2, "C": 3, "D": 5, "E": 7, "F": 8, "G": 10}
+    modifiers = {"Natural": "", "Flat": "b", "Sharp": "#"}
     
     def __repr__(self):
         return self.note
@@ -204,7 +212,7 @@ class Note:
         
     def get_value(self):
         value = Note.letters[self.note[0]]
-        if len(self.note) == 2:
+        if len(self.note) > 1:
             symbol = self.note[1]
             if symbol == "#":
                 value += len(self.note) - 1
