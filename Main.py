@@ -19,6 +19,7 @@ class MainWindow(QWidget):
         self.scale_label = MyLabel(self, "Scale Type: ")
         self.tuning_label =  MyLabel(self, "Guitar Tuning: ")
         self.mode_label = MyLabel(self, "Note/Tab View: ")
+        self.bottom_label = MyLabel(self, "")
         self.labels = [self.root_label, self.modifier_label,
                        self.scale_label, self.tuning_label, self.mode_label]
         self.root_combo = MyComboBox(self, Note.letter_values)
@@ -31,9 +32,10 @@ class MainWindow(QWidget):
         # Layout
         self.layout = QGridLayout()
         for k, (label, button) in enumerate(zip(self.labels, self.buttons)):
-            self.layout.addWidget(label, 2*k, 0)
-            self.layout.addWidget(button, 2*k+1, 0)
-        self.layout.addWidget(self.instrument.widget, 2*k+2, 0)
+            self.layout.addWidget(label, 2 * k, 0)
+            self.layout.addWidget(button, 2 * k + 1, 0)
+        self.layout.addWidget(self.instrument.widget, 2 * k + 2, 0)
+        self.layout.addWidget(self.bottom_label, 2 * k + 3, 0)
         self.setLayout(self.layout)
         # Initialize
         self.update_all()
@@ -53,6 +55,8 @@ class MainWindow(QWidget):
         self.instrument.tuning = tuning
         self.instrument.widget.mode = mode
         self.instrument.update()
+        # Change View
+        self.bottom_label.setText(str(self.instrument.scale))
 
 
 class MyLabel(QLabel):
