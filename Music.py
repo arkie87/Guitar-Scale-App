@@ -15,20 +15,29 @@ class Scale:
         return note.note in self.notes
     
     def __init__(self, root="C", scale="Major"):
-        self.root = Note(root)
+        self.root = Note(root, letter=root[0])
         self.scale = scale
         self.update()
         
     def update(self):
-        intervals = Scale.scale_intervals[self.scale]
+        self.intervals = Scale.scale_intervals[self.scale]
         names = [self.root]
         notes = [self.root.note]
-        for interval in intervals:
+        for interval in self.intervals:
             note = self.root + interval
             names.append(note)
             notes.append(note.note)
         self.names = names
         self.notes = notes
+        self.rename()
+        
+    def rename(self):
+        if len(self.intervals) <= 7:  # Rename #'s to b's
+            letter = self.names[0].scale_name[0]
+            for note in self.names:
+                note.rename(letter)
+                letter = Note.next_letter(letter)
+                
     
     def index(self, note):
         if note in self:
@@ -47,6 +56,12 @@ class Note:
     modifiers = {"Natural": "", "Flat": "b", "Sharp": "#"}
     letter_values = {"C" : 0, "D" : 2, "E" : 4, 
                      "F" : 5, "G" : 7, "A" : 9, "B" : 11}
+    
+    @staticmethod
+    def next_letter(letter):
+        letters = list(Note.letter_values.keys())
+        index = (letters.index(letter) + 1) % 7
+        return letters[index]
     
     @staticmethod
     def get_pitch(note):
@@ -106,6 +121,10 @@ class Note:
                 symbol = "b" * abs(12 - diff)
             scale_name = self.letter + symbol
             return scale_name
+        
+    def rename(self, letter):
+        note = Note(self.pitch, letter=letter)
+        self.scale_name = note.scale_name
 
     def play(self, time=0.25):
         Note.player.play_note(self.play_name, time)
@@ -120,7 +139,8 @@ def test_notes():
 
 
 def test_scale():
-    scale = Scale("C")
+    #scale = Scale("G#")
+    scale = Scale("Ab")
     print(scale)
     scale.play()
     return scale
