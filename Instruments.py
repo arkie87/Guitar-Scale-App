@@ -155,5 +155,5 @@ def test_guitar():
 
 
 if __name__ == "__main__":
-    #guitar = test_guitar()
-    guitar = play_toxicity()
+    guitar = test_guitar()
+    #guitar = play_toxicity()
